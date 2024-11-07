@@ -1,16 +1,21 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:todoapp/common/show_model.dart';
 
 
 void main() {
   runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'ToDoApp',
-      theme: ThemeData(),
-      home: const HomePage(),
+    ProviderScope(
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'ToDoApp',
+        theme: ThemeData(),
+        home: const HomePage(),
+      ),
     )
   );
 }
@@ -114,8 +119,52 @@ class HomePage extends StatelessWidget {
             
             child: const Text('+ New Task'))
             ],
-            )
-          
+        ),
+        
+        const Gap(12),
+
+        const Gap(30),
+
+        Container(
+          width: double.infinity,
+          height: 120,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(children: [
+            Container(
+              decoration: const BoxDecoration(
+                color: Colors.green,
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(12),
+                  bottomLeft: Radius.circular(12),
+                ),
+              ), 
+              width: 20,
+            ), 
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Column(children: [
+                  ListTile(
+                    title: const Text('Learning Web Developer'),
+                    subtitle: const Text('Learning ReactJs for FrontEnd'),
+                    trailing: Transform.scale( 
+                    scale: 1.3,
+                    child: Checkbox(
+                      
+                      activeColor: Colors.blue.shade300,
+                      shape: const CircleBorder(),
+                      value: true, onChanged: (value) => print(value),),
+                  )
+                  )
+                ]), 
+              ),
+            ),
+          ]),
+        ),
+
       ],
       ),
       ),

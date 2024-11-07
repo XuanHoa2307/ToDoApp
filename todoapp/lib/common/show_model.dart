@@ -1,19 +1,28 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
+import 'package:intl/intl.dart';
 import 'package:todoapp/constrant/app_style.dart';
+import 'package:todoapp/provider/date_time_provider.dart';
+import 'package:todoapp/provider/radio_provider.dart';
 import 'package:todoapp/widget/date_time_widget.dart';
 import 'package:todoapp/widget/radio_widget.dart';
 import 'package:todoapp/widget/textfield_widget.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AddNewTaskModel extends StatelessWidget {
+
+class AddNewTaskModel extends ConsumerWidget {
   const AddNewTaskModel({
     super.key,
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+
+    final dateProv = ref.watch(dateProvider);
+    final timeProv = ref.watch(timeProvider);
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(19),
       child: Container(
@@ -57,29 +66,73 @@ class AddNewTaskModel extends StatelessWidget {
             const Gap(13),
 
             const Text('Category', style: AppStyle.headingOne,),
+
             //const Gap(5),
             
-            const Row(
+            Row(
                 children: [
-                  Expanded(child: RadioWidget(titleRadio: 'Learn', cateColor: Colors.green)),
+                  Expanded(child: RadioWidget(titleRadio: 'Learn', cateColor: Colors.green,
+                  valueInput: 1, onChangedValue: () => ref.read(radioProvider.notifier).update ((state) => 1)
+                  )
+                  ),
               
-                  Expanded(child: RadioWidget(titleRadio: 'Work', cateColor: Colors.blue)),
+                  Expanded(child: RadioWidget(titleRadio: 'Work', cateColor: Colors.blue, 
+                  valueInput: 2,onChangedValue: () => ref.read(radioProvider.notifier).update ((state) => 2)
+                  )
+                  ),
               
-                  Expanded(child: RadioWidget(titleRadio: 'General', cateColor: Colors.orange)),
+                  Expanded(child: RadioWidget(titleRadio: 'General', cateColor: Colors.orange, 
+                  valueInput: 3, onChangedValue: () => ref.read(radioProvider.notifier).update ((state) => 3)
+                  )
+                  ),
                 ],
             ),
 
             const Gap(3),
 
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                date_time_widget(title: 'Date', valueText: 'dd/mm/yyyy', icon: CupertinoIcons.calendar),
-                
-                Gap(50),
+                DateTimeWidget(title: 'Date', valueText: dateProv, icon: CupertinoIcons.calendar,
+                 onTap: () async {
+                  final getValue = await showDatePicker(
+                  context: context, 
+                  initialDate: DateTime.now(),
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime(2090),
+                );
 
-                date_time_widget(title: 'Time', valueText: 'hh : mm', icon: CupertinoIcons.clock),
+                if(getValue != null){
+                    final format = DateFormat.yMd();
+                    print(format.format(getValue));
+                    ref
+                        .read(dateProvider.notifier)
+                        .update((state) => format.format(getValue));
+
+
+                  }
+
+                }
+                ),
                 
+                const Gap(50),
+
+                DateTimeWidget(title: 'Time', valueText: timeProv, icon: CupertinoIcons.clock,
+                onTap: () async {
+                  
+                  final getTime = await showTimePicker(
+                    context: context,
+                    initialTime: TimeOfDay.now()
+                    );
+
+                  if(getTime != null){
+                    ref
+                        .read(timeProvider.notifier)
+                        .update((state) => getTime.format(context));
+                  }
+
+                }
+                ),
               ],
             ),
 
@@ -101,7 +154,7 @@ class AddNewTaskModel extends StatelessWidget {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  onPressed: () {},
+                  onPressed: () => Navigator.pop(context),
                   child: const Text('Cancel', style: TextStyle(fontSize: 15),),
                 ),
               ), 
@@ -128,7 +181,6 @@ class AddNewTaskModel extends StatelessWidget {
               ), 
             ],
           ) 
-
           ],
         ),
       )
