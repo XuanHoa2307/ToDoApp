@@ -1,41 +1,130 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
+import 'package:todoapp/common/show_model.dart';
+
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'ToDoApp',
+      theme: ThemeData(),
+      home: const HomePage(),
+    )
+  );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return Scaffold(
+    backgroundColor: Colors.grey.shade200,
+    appBar: AppBar(
+      backgroundColor: Colors.white,
+      foregroundColor: Colors.black,
+      elevation: 0,
+      title: ListTile(
+        leading: CircleAvatar(
+        backgroundColor: Colors.amber.shade200,
+        radius: 25,
+        child: ClipOval(
+          child: Image.asset(
+            'assets/profile.png',
+            fit: BoxFit.cover,
+            width: 50,
+            height: 50,
+          ),
+        ),
+        ),
+
+        title: Text('Hi, I\'m', 
+                    style: TextStyle(fontSize: 12, color: Colors.grey.shade400),),
+        subtitle: const Text('Suhao',
+                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+
+      actions: [
+        Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Row(children: [
+          IconButton(
+            onPressed: () {}, 
+            icon: const Icon(CupertinoIcons.calendar)),
+
+          const SizedBox(width: 5),
+
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(CupertinoIcons.bell))
+
+        ],),)
+      ],
+
+    ),
+    body: SingleChildScrollView(child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 30),
+      child: Column(
+        children: [
+        const Gap(20),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+          const Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+                Text("To-Do Task List", 
+                style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black
+                        ),
+                        ),
+                Text("Wednesday, 6 November",
+                style: TextStyle(
+                        //fontWeight: FontWeight.bold,
+                        color: Colors.black
+                        ),
+                        ),
+            ],
+            ),
+          
+          ElevatedButton(
+          
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFD5E8FA),
+              foregroundColor: Colors.blue.shade900,
+              elevation: 0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              )
+            ),
+
+            onPressed:() => showModalBottomSheet(
+
+                isScrollControlled: true,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                ),
+
+                context: context,
+                builder: (context) => const AddNewTaskModel(),
+                ),
+            
+            child: const Text('+ New Task'))
+            ],
+            )
+          
+      ],
+      ),
+      ),
+      )
     );
   }
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
