@@ -2,8 +2,8 @@
 Mobile App Project by Flutter
 
 ==== ___ THÔNG TIN SINH VIÊN ___===
-MSSV: 21120072
-Họ tên: Nguyễn Xuân Hòa
+- MSSV: 21120072
+- Họ tên: Nguyễn Xuân Hòa
 
 Note: 
 - Em đã làm đầy đủ các chức năng thầy yêu cầu,
