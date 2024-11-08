@@ -1,177 +1,36 @@
-import 'dart:math';
-
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:gap/gap.dart';
-import 'package:todoapp/common/show_model.dart';
+import 'package:todoapp/firebase_options.dart';
+import 'package:todoapp/view/home_page.dart';
 
 
-void main() {
+void main() async {
+
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
     ProviderScope(
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'ToDoApp',
         theme: ThemeData(),
-        home: const HomePage(),
+        home:  const HomePage(),
       ),
     )
   );
 }
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-    backgroundColor: Colors.grey.shade200,
-    appBar: AppBar(
-      backgroundColor: Colors.white,
-      foregroundColor: Colors.black,
-      elevation: 0,
-      title: ListTile(
-        leading: CircleAvatar(
-        backgroundColor: Colors.amber.shade200,
-        radius: 25,
-        child: ClipOval(
-          child: Image.asset(
-            'assets/profile.png',
-            fit: BoxFit.cover,
-            width: 50,
-            height: 50,
-          ),
-        ),
-        ),
 
-        title: Text('Hi, I\'m', 
-                    style: TextStyle(fontSize: 12, color: Colors.grey.shade400),),
-        subtitle: const Text('Suhao',
-                  style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black),),
-      ),
 
-      actions: [
-        Padding(padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Row(children: [
-          IconButton(
-            onPressed: () {}, 
-            icon: const Icon(CupertinoIcons.calendar)),
 
-          const SizedBox(width: 5),
 
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(CupertinoIcons.bell))
 
-        ],),)
-      ],
 
-    ),
-    body: SingleChildScrollView(child: Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 30),
-      child: Column(
-        children: [
-        const Gap(20),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-          const Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-                Text("To-Do Task List", 
-                style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black
-                        ),
-                        ),
-                Text("Wednesday, 6 November",
-                style: TextStyle(
-                        //fontWeight: FontWeight.bold,
-                        color: Colors.black
-                        ),
-                        ),
-            ],
-            ),
-          
-          ElevatedButton(
-          
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFD5E8FA),
-              foregroundColor: Colors.blue.shade900,
-              elevation: 0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              )
-            ),
-
-            onPressed:() => showModalBottomSheet(
-
-                isScrollControlled: true,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(20),
-                ),
-
-                context: context,
-                builder: (context) => const AddNewTaskModel(),
-                ),
-            
-            child: const Text('+ New Task'))
-            ],
-        ),
-        
-        const Gap(12),
-
-        const Gap(30),
-
-        Container(
-          width: double.infinity,
-          height: 120,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(children: [
-            Container(
-              decoration: const BoxDecoration(
-                color: Colors.green,
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(12),
-                  bottomLeft: Radius.circular(12),
-                ),
-              ), 
-              width: 20,
-            ), 
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 5),
-                child: Column(children: [
-                  ListTile(
-                    title: const Text('Learning Web Developer'),
-                    subtitle: const Text('Learning ReactJs for FrontEnd'),
-                    trailing: Transform.scale( 
-                    scale: 1.3,
-                    child: Checkbox(
-                      
-                      activeColor: Colors.blue.shade300,
-                      shape: const CircleBorder(),
-                      value: true, onChanged: (value) => print(value),),
-                  )
-                  )
-                ]), 
-              ),
-            ),
-          ]),
-        ),
-
-      ],
-      ),
-      ),
-      )
-    );
-  }
-}
 
 
 

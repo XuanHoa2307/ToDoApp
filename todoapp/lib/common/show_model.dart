@@ -3,8 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 import 'package:intl/intl.dart';
 import 'package:todoapp/constrant/app_style.dart';
+import 'package:todoapp/model/todo_model.dart';
 import 'package:todoapp/provider/date_time_provider.dart';
 import 'package:todoapp/provider/radio_provider.dart';
+import 'package:todoapp/provider/service_provider.dart';
+import 'package:todoapp/services/notification_service.dart';
 import 'package:todoapp/widget/date_time_widget.dart';
 import 'package:todoapp/widget/radio_widget.dart';
 import 'package:todoapp/widget/textfield_widget.dart';
@@ -12,13 +15,37 @@ import 'package:todoapp/widget/textfield_widget.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 
-class AddNewTaskModel extends ConsumerWidget {
+class AddNewTaskModel extends ConsumerStatefulWidget {
   const AddNewTaskModel({
     super.key,
+    
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<AddNewTaskModel> createState() => _AddNewTaskModelState();
+}
+
+class _AddNewTaskModelState extends ConsumerState<AddNewTaskModel> {
+
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+  final NotificationService notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    notificationService.initializeNotifications();
+  }
+
+  /*@override
+  void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    super.dispose();
+  }*/
+  
+  @override
+  Widget build(BuildContext context) {
 
     final dateProv = ref.watch(dateProvider);
     final timeProv = ref.watch(timeProvider);
@@ -55,13 +82,13 @@ class AddNewTaskModel extends ConsumerWidget {
             ),
             const Text('Title Task', style: AppStyle.headingOne,),
             const Gap(5),
-            const TextFieldWidget(maxLines: 1, hintText: 'Add Task Name'),
+            TextFieldWidget(maxLines: 1, hintText: 'Add Task Name', txtController: titleController,),
 
             const Gap(13),
 
             const Text('Discription', style: AppStyle.headingOne,),
             const Gap(5),
-            const TextFieldWidget(maxLines: 4, hintText: 'Add Detail Discription',),
+            TextFieldWidget(maxLines: 4, hintText: 'Add Detail Discription', txtController: descriptionController,),
 
             const Gap(13),
 
@@ -104,7 +131,7 @@ class AddNewTaskModel extends ConsumerWidget {
 
                 if(getValue != null){
                     final format = DateFormat.yMd();
-                    print(format.format(getValue));
+                    //print(format.format(getValue));
                     ref
                         .read(dateProvider.notifier)
                         .update((state) => format.format(getValue));
@@ -175,8 +202,65 @@ class AddNewTaskModel extends ConsumerWidget {
                     ),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                   ),
-                  onPressed: () {},
-                  child: const Text('Create', style: TextStyle(fontSize: 15),),
+                  onPressed: () {
+                  
+                  final getRadioValue = ref.read(radioProvider);
+                  if (titleController.text.trim().isEmpty || 
+                      descriptionController.text.trim().isEmpty ||
+                      getRadioValue == 0 ||
+                      ref.read(dateProvider) == 'dd/mm/yyyy' ||
+                      ref.read(timeProvider) == 'hh : mm') {
+                        
+                    
+                    showDialog(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Warning'),
+                        content: const Text('Please fill in all fields before creating task'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      ),
+                    );
+                    return;
+                  }
+
+                  
+                  String category = '';
+                  switch(getRadioValue) {
+                    case 1:
+                      category = 'Learn';
+                      break;
+                    case 2:
+                      category = 'Work';
+                      break;
+                    case 3:
+                      category = 'General';
+                      break;
+                  }
+
+                  ref.read(serviceProvider).addNewTask(TodoModel(
+                    titleTask: titleController.text,
+                    description: descriptionController.text,
+                    category: category,
+                    dateTask: ref.read(dateProvider),
+                    timeTask: ref.read(timeProvider),
+                    isDone: false,
+                  ));
+
+                  notificationService.scheduleNotification(1,  ref.read(dateProvider), ref.read(timeProvider));
+
+                  titleController.clear();
+                  descriptionController.clear();
+                  ref.read(radioProvider.notifier).update((state) => 0);
+                  ref.read(dateProvider.notifier).update((state) => 'dd/mm/yyyy');
+                  ref.read(timeProvider.notifier).update((state) => 'hh : mm');
+                  Navigator.pop(context);
+                },
+                child: const Text('Create', style: TextStyle(fontSize: 15)),
                 ), 
               ), 
             ],
